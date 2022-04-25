@@ -80,7 +80,7 @@ class _dataAbsenState extends State<dataAbsen> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "History",
+          "History Absence In",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),

@@ -25,7 +25,7 @@ class _DetailState extends State<Detail> {
     var showtime = DateFormat.Hms().format(gettime);
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Details Absence"),
+        title: new Text("Details Absence In"),
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
       ),
       body: new Container(

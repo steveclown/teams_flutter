@@ -1017,7 +1017,7 @@ class _menuProfilState extends State<menuProfil> {
                                       Navigator.of(context).push(
                                           new MaterialPageRoute(
                                               builder: (BuildContext context) =>
-                                                  dataAbsenOut()));
+                                                  dataAbsen()));
                                     }),
                                     child: Icon(
                                       Icons.arrow_right_alt,
@@ -1043,7 +1043,7 @@ class _menuProfilState extends State<menuProfil> {
                                       Navigator.of(context).push(
                                           new MaterialPageRoute(
                                               builder: (BuildContext context) =>
-                                                  dataAbsen()));
+                                                  dataAbsenOut()));
                                     }),
                                     child: Icon(
                                       Icons.arrow_right_alt,

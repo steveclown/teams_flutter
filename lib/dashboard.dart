@@ -197,6 +197,7 @@ class _menuDashboardState extends State<menuDashboard> {
   }
 
   insertAttendance() async {
+    EasyLoading.show(status: 'Harap Tunggu...');
     // GET GPS
     Location location = new Location();
     bool _serviceEnabled;
@@ -266,6 +267,7 @@ class _menuDashboardState extends State<menuDashboard> {
       setState(() {
         bottomIndex = 0;
       });
+      EasyLoading.dismiss();
       return Fluttertoast.showToast(
           msg: "Anda Sedang Cuti atau Sakit",
           toastLength: Toast.LENGTH_SHORT,
@@ -317,6 +319,7 @@ class _menuDashboardState extends State<menuDashboard> {
       print(maxLateAttendance);
 
       if (strmaxovertime < strttimein) {
+        print("OVERTIME");
         // OVERTIME
         //CHECK DATA ATTENDANCE TODAY
         var employee_attendance_date =
@@ -342,8 +345,9 @@ class _menuDashboardState extends State<menuDashboard> {
           setState(() {
             bottomIndex = 0;
           });
+          EasyLoading.dismiss();
           return Fluttertoast.showToast(
-              msg: "Proses Absensi Sudah Dilakukan!",
+              msg: "Proses Absensi Gagal",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 5,
@@ -403,28 +407,28 @@ class _menuDashboardState extends State<menuDashboard> {
             var pic = await http.MultipartFile.fromPath(
                 "image", imageAttendance.path);
             request.files.add(pic);
-            EasyLoading.show(status: 'loading...');
             var response = await request.send();
             if (response.statusCode == 200) {
-              EasyLoading.showSuccess('Great Success!');
+              EasyLoading.showSuccess('Absen Sukses!');
               EasyLoading.dismiss();
               print("Sukses");
             } else {
               print("Gagal");
             }
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialog(
-                    locname: address.toString(),
-                    imgurl: "$tostrimg.jpg",
-                    title: "Absence Success",
-                    date: "Date : $date",
-                    time: "Time : $time",
-                    ip: "IP Address : $wifiIP",
-                    lat: "Latitude : ${_locationData.latitude}",
-                    long: "Longtitude : ${_locationData.longitude}"));
+            // showDialog(
+            //     context: context,
+            //     builder: (context) => CustomDialog(
+            //         locname: address.toString(),
+            //         imgurl: "$tostrimg.jpg",
+            //         title: "Absence Success",
+            //         date: "Date : $date",
+            //         time: "Time : $time",
+            //         ip: "IP Address : $wifiIP",
+            //         lat: "Latitude : ${_locationData.latitude}",
+            //         long: "Longtitude : ${_locationData.longitude}"));
           } else {
             if (distanceInMeters > maxDisCom) {
+              EasyLoading.dismiss();
               return Fluttertoast.showToast(
                   msg: "Lokasi terlalu jauh",
                   toastLength: Toast.LENGTH_SHORT,
@@ -488,30 +492,30 @@ class _menuDashboardState extends State<menuDashboard> {
               var pic = await http.MultipartFile.fromPath(
                   "image", imageAttendance.path);
               request.files.add(pic);
-              EasyLoading.show(status: 'loading...');
               var response = await request.send();
               if (response.statusCode == 200) {
-                EasyLoading.showSuccess('Great Success!');
+                EasyLoading.showSuccess('Absen Sukses!');
                 EasyLoading.dismiss();
                 print("Sukses");
               } else {
                 print("Gagal");
               }
-              showDialog(
-                  context: context,
-                  builder: (context) => CustomDialog(
-                      locname: address.toString(),
-                      imgurl: "$tostrimg.jpg",
-                      title: "Absence Success",
-                      date: "Date : $date",
-                      time: "Time : $time",
-                      ip: "IP Address : $wifiIP",
-                      lat: "Latitude : ${_locationData.latitude}",
-                      long: "Longtitude : ${_locationData.longitude}"));
+              // showDialog(
+              //     context: context,
+              //     builder: (context) => CustomDialog(
+              //         locname: address.toString(),
+              //         imgurl: "$tostrimg.jpg",
+              //         title: "Absence Success",
+              //         date: "Date : $date",
+              //         time: "Time : $time",
+              //         ip: "IP Address : $wifiIP",
+              //         lat: "Latitude : ${_locationData.latitude}",
+              //         long: "Longtitude : ${_locationData.longitude}"));
             }
           }
         }
       } else if (strmaxlate < strttimein) {
+        EasyLoading.dismiss();
         return Fluttertoast.showToast(
             msg: "Sudah Melebihi Batas Absen!",
             toastLength: Toast.LENGTH_SHORT,
@@ -546,6 +550,7 @@ class _menuDashboardState extends State<menuDashboard> {
           setState(() {
             bottomIndex = 0;
           });
+          EasyLoading.dismiss();
           return Fluttertoast.showToast(
               msg: "Proses Absensi Sudah Dilakukan!",
               toastLength: Toast.LENGTH_SHORT,
@@ -607,28 +612,28 @@ class _menuDashboardState extends State<menuDashboard> {
             var pic = await http.MultipartFile.fromPath(
                 "image", imageAttendance.path);
             request.files.add(pic);
-            EasyLoading.show(status: 'loading...');
             var response = await request.send();
             if (response.statusCode == 200) {
-              EasyLoading.showSuccess('Great Success!');
+              EasyLoading.showSuccess('Absen Sukses!');
               EasyLoading.dismiss();
               print("Sukses");
             } else {
               print("Gagal");
             }
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialog(
-                    locname: address.toString(),
-                    imgurl: "$tostrimg.jpg",
-                    title: "Absence Success",
-                    date: "Date : $date",
-                    time: "Time : $time",
-                    ip: "IP Address : $wifiIP",
-                    lat: "Latitude : ${_locationData.latitude}",
-                    long: "Longtitude : ${_locationData.longitude}"));
+            // showDialog(
+            //     context: context,
+            //     builder: (context) => CustomDialog(
+            //         locname: address.toString(),
+            //         imgurl: "$tostrimg.jpg",
+            //         title: "Absence Success",
+            //         date: "Date : $date",
+            //         time: "Time : $time",
+            //         ip: "IP Address : $wifiIP",
+            //         lat: "Latitude : ${_locationData.latitude}",
+            //         long: "Longtitude : ${_locationData.longitude}"));
           } else {
             if (distanceInMeters > maxDisCom) {
+              EasyLoading.dismiss();
               return Fluttertoast.showToast(
                   msg: "Lokasi terlalu jauh",
                   toastLength: Toast.LENGTH_SHORT,
@@ -692,26 +697,25 @@ class _menuDashboardState extends State<menuDashboard> {
               var pic = await http.MultipartFile.fromPath(
                   "image", imageAttendance.path);
               request.files.add(pic);
-              EasyLoading.show(status: 'loading...');
               var response = await request.send();
               if (response.statusCode == 200) {
-                EasyLoading.showSuccess('Great Success!');
+                EasyLoading.showSuccess('Absen Sukses!');
                 EasyLoading.dismiss();
                 print("Sukses");
               } else {
                 print("Gagal");
               }
-              showDialog(
-                  context: context,
-                  builder: (context) => CustomDialog(
-                      locname: address.toString(),
-                      imgurl: "$tostrimg.jpg",
-                      title: "Absence Success",
-                      date: "Date : $date",
-                      time: "Time : $time",
-                      ip: "IP Address : $wifiIP",
-                      lat: "Latitude : ${_locationData.latitude}",
-                      long: "Longtitude : ${_locationData.longitude}"));
+              // showDialog(
+              //     context: context,
+              //     builder: (context) => CustomDialog(
+              //         locname: address.toString(),
+              //         imgurl: "$tostrimg.jpg",
+              //         title: "Absence Success",
+              //         date: "Date : $date",
+              //         time: "Time : $time",
+              //         ip: "IP Address : $wifiIP",
+              //         lat: "Latitude : ${_locationData.latitude}",
+              //         long: "Longtitude : ${_locationData.longitude}"));
             }
           }
         }

@@ -81,7 +81,7 @@ class _dataAbsenOutState extends State<dataAbsenOut> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "History",
+          "History Absence Out",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
