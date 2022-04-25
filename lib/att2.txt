@@ -1,0 +1,399 @@
+insertAttendance() async {
+    // GET GPS
+    Location location = new Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+    bool _isListenLocation = false, _isGetLocation = false;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (_serviceEnabled) return;
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) return;
+    }
+
+    _locationData = await location.getLocation();
+    setState(() {
+      _isGetLocation = true;
+    });
+
+    //GET ADDRESS
+    List<geocod.Placemark> placemark = await geocod.placemarkFromCoordinates(
+        _locationData.latitude, _locationData.longitude,
+        localeIdentifier: "en");
+    geocod.Placemark place = placemark[0];
+    address.value =
+        '${place.street},${place.locality},${place.subAdministrativeArea},${place.country}';
+    // '${place.subAdministrativeArea},${place.country}';
+    print("address");
+    print(address);
+    setState(() {
+      address();
+    });
+
+    // GET IP
+    wifiIP = await WifiInfo().getWifiIP();
+    setState(() {
+      wifiIP;
+    });
+
+    // Calculate Distance
+    var urlLat = Uri.parse("$env/teams/getlatlong.php");
+    final responseLat = await http.get(urlLat);
+    final dataLat = jsonDecode(responseLat.body);
+    String company_latitude = dataLat[0]['company_latitude'];
+    String company_longitude = dataLat[0]['company_longitude'];
+    String company_max_distance = dataLat[0]['company_max_distance'];
+    String company_max_attendance =
+        dataLat[0]['employee_working_in_start_minute'];
+    var latCom = double.parse(company_latitude);
+    var longCom = double.parse(company_longitude);
+    var maxDisCom = double.parse(company_max_distance);
+    var plusLateAttendance = int.parse(company_max_attendance);
+
+    var distanceInMeters = Geolocator.distanceBetween(
+        latCom, longCom, _locationData.latitude, _locationData.longitude);
+    print("DISTANCE");
+    print(distanceInMeters);
+
+    print("Max Late Attendance");
+    print(plusLateAttendance);
+
+    // Cek attendance_log (Cuti atau sakit)
+    if (days > 1) {
+      setState(() {
+        bottomIndex = 0;
+      });
+      return Fluttertoast.showToast(
+          msg: "Anda Sedang Cuti atau Sakit",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Color.fromARGB(255, 42, 46, 147),
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } else {
+      //CHECK DATA ATTENDANCE TODAY
+      var employee_attendance_date =
+          DateFormat('yyyy-MM-dd').format(DateTime.now());
+      var url = Uri.parse("$env/teams/getdataattendancecheck.php");
+      final response = await http.post(url, headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      }, body: {
+        "employee_id": employee_id.toString(),
+        "employee_attendance_date": '$employee_attendance_date'
+      });
+      var data = jsonDecode(response.body);
+      int valueattendancecheck = data['value'];
+      int countattendancecheck =
+          int.parse(data['0']['COUNT(employee_attendance_id)']);
+      String pesan = data['message'];
+      print(data['0']['COUNT(employee_attendance_id)']);
+      print(employee_attendance_date);
+      print(valueattendancecheck);
+      print(pesan);
+
+      if (countattendancecheck == 2) {
+        setState(() {
+          bottomIndex = 0;
+        });
+        return Fluttertoast.showToast(
+            msg: "Proses Absensi Sudah Dilakukan!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Color.fromARGB(255, 42, 46, 147),
+            textColor: Colors.white,
+            fontSize: 16.0);
+      } else {
+        if (payroll_employee_level > 0) {
+          // GET IMAGE
+          final ImagePicker _picker = ImagePicker();
+          final XFile imagePicked =
+              await _picker.pickImage(source: ImageSource.camera);
+          imageAttendance = File(imagePicked.path);
+          imageAttendance2 = File(imagePicked.name);
+          setState(() {
+            imageAttendance = File(imagePicked.path);
+            imageAttendance2 = File(imagePicked.name);
+            strimg = imageAttendance2.toString();
+            substrimg = strimg.substring(7);
+            substrimg2 = substrimg.substring(0, 18);
+            tostrimg = substrimg2.toString();
+          });
+          // INSERT ATTENDANCE
+          var date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          var periode = DateFormat('yyyyMM').format(DateTime.now());
+          var days = DateFormat('dd').format(DateTime.now());
+          var dt = DateFormat('yyyy-MM-dd').add_Hms().format(DateTime.now());
+          var time = DateFormat.Hms().format(DateTime.now());
+          var url = Uri.parse("$env/teams/insertattendance.php");
+          var request = http.MultipartRequest('POST', url);
+          request.fields['region_id'] = region_id;
+          request.fields['branch_id'] = branch_id;
+          request.fields['division_id'] = division_id;
+          request.fields['department_id'] = department_id;
+          request.fields['section_id'] = section_id;
+          request.fields['unit_id'] = unit_id;
+          request.fields['location_id'] = location_id;
+          request.fields['shift_id'] = shift_id;
+          request.fields['employee_shift_id'] = employee_shift_id;
+          request.fields['employee_id'] = employee_id.toString();
+          request.fields['employee_rfid_code'] = employee_rfid_code;
+          request.fields['periode'] = periode;
+          request.fields['days'] = days;
+          request.fields['employee_attendance_in_status'] = "1";
+          request.fields['employee_attendance_out_status'] = "0";
+          request.fields['employee_attendance_date'] = date;
+          request.fields['employee_attendance_log_date'] = dt;
+          request.fields['employee_attendance_log_in_date'] = dt;
+          request.fields['employee_attendance_log_out_date'] = dt;
+          request.fields['machine_ip_address'] = wifiIP;
+          request.fields['employee_attendance_location_in'] =
+              "${_locationData.latitude} , ${_locationData.longitude}";
+          request.fields['employee_attendance_location_out'] =
+              "${_locationData.latitude} , ${_locationData.longitude}";
+          request.fields['employee_attendance_location_address'] =
+              address.toString();
+          var pic =
+              await http.MultipartFile.fromPath("image", imageAttendance.path);
+          request.files.add(pic);
+          var response = await request.send();
+          if (response.statusCode == 200) {
+            print("Sukses");
+          } else {
+            print("Gagal");
+          }
+          showDialog(
+              context: context,
+              builder: (context) => CustomDialog(
+                  locname: address.toString(),
+                  imgurl: "$tostrimg.jpg",
+                  title: "Absence Success",
+                  date: "Date : $date",
+                  time: "Time : $time",
+                  ip: "IP Address : $wifiIP",
+                  lat: "Latitude : ${_locationData.latitude}",
+                  long: "Longtitude : ${_locationData.longitude}"));
+        } else {
+          if (distanceInMeters > maxDisCom) {
+            return Fluttertoast.showToast(
+                msg: "Lokasi terlalu jauh",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 5,
+                backgroundColor: Color.fromARGB(255, 42, 46, 147),
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else {
+            // Calculate Max Time In Attendance
+            var schedule_item_date =
+                DateFormat('yyyy-MM-dd').format(DateTime.now());
+            var url = Uri.parse("$env/teams/getmaxlateattendance.php");
+            final response = await http.post(url, headers: {
+              "Accept": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            }, body: {
+              "employee_id": employee_id.toString(),
+              "schedule_item_date": schedule_item_date
+            });
+            var data = jsonDecode(response.body);
+            String pesan = data['message'];
+            int valuemaxtimein = data['value'];
+            String employee_schedule_item_date =
+                data['0']['employee_schedule_item_in_start_date'];
+            String employee_schedule_item_out_date =
+                data['0']['employee_schedule_item_out_start_date'];
+            print(employee_schedule_item_date);
+            print(employee_schedule_item_out_date);
+            print(valuemaxtimein);
+            print(pesan);
+            var defaultLateAttendance =
+                DateTime.parse(employee_schedule_item_date);
+            var maxLateAttendance = defaultLateAttendance
+                .add(Duration(minutes: plusLateAttendance));
+            var defaultOutAttendance =
+                DateTime.parse(employee_schedule_item_out_date);
+            var mindefaultOutAttendance =
+                defaultOutAttendance.subtract(Duration(days: 1));
+
+            var strttimein = DateTime.now().millisecondsSinceEpoch;
+            var strmaxlate = maxLateAttendance.millisecondsSinceEpoch;
+            var strmaxovertime = mindefaultOutAttendance.millisecondsSinceEpoch;
+
+            print(mindefaultOutAttendance);
+            print(strttimein);
+            print(strmaxlate);
+            print(strmaxovertime);
+            print('defaultLateAttendance');
+            print(defaultLateAttendance);
+
+            print('maxLateAttendance');
+            print(maxLateAttendance);
+
+            if (strmaxovertime < strttimein) {
+              print("INSERT OVERTIME");
+              // GET IMAGE
+              final ImagePicker _picker = ImagePicker();
+              final XFile imagePicked =
+                  await _picker.pickImage(source: ImageSource.camera);
+              imageAttendance = File(imagePicked.path);
+              imageAttendance2 = File(imagePicked.name);
+              setState(() {
+                imageAttendance = File(imagePicked.path);
+                imageAttendance2 = File(imagePicked.name);
+                strimg = imageAttendance2.toString();
+                substrimg = strimg.substring(7);
+                substrimg2 = substrimg.substring(0, 18);
+                tostrimg = substrimg2.toString();
+              });
+
+              // INSERT ATTENDANCE
+              var date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+              var periode = DateFormat('yyyyMM').format(DateTime.now());
+              var days = DateFormat('dd').format(DateTime.now());
+              var dt =
+                  DateFormat('yyyy-MM-dd').add_Hms().format(DateTime.now());
+              var time = DateFormat.Hms().format(DateTime.now());
+              var url = Uri.parse("$env/teams/insertattendance.php");
+              var request = http.MultipartRequest('POST', url);
+              request.fields['region_id'] = region_id;
+              request.fields['branch_id'] = branch_id;
+              request.fields['division_id'] = division_id;
+              request.fields['department_id'] = department_id;
+              request.fields['section_id'] = section_id;
+              request.fields['unit_id'] = unit_id;
+              request.fields['location_id'] = location_id;
+              request.fields['shift_id'] = shift_id;
+              request.fields['employee_shift_id'] = employee_shift_id;
+              request.fields['employee_id'] = employee_id.toString();
+              request.fields['employee_rfid_code'] = employee_rfid_code;
+              request.fields['periode'] = periode;
+              request.fields['days'] = days;
+              request.fields['employee_attendance_in_status'] = "1";
+              request.fields['employee_attendance_out_status'] = "0";
+              request.fields['employee_attendance_date'] = date;
+              request.fields['employee_attendance_log_date'] = dt;
+              request.fields['employee_attendance_log_in_date'] = dt;
+              request.fields['employee_attendance_log_out_date'] = dt;
+              request.fields['machine_ip_address'] = wifiIP;
+              request.fields['employee_attendance_location_in'] =
+                  "${_locationData.latitude} , ${_locationData.longitude}";
+              request.fields['employee_attendance_location_out'] =
+                  "${_locationData.latitude} , ${_locationData.longitude}";
+              request.fields['employee_attendance_location_address'] =
+                  address.toString();
+              var pic = await http.MultipartFile.fromPath(
+                  "image", imageAttendance.path);
+              request.files.add(pic);
+              var response = await request.send();
+              if (response.statusCode == 200) {
+                print("Sukses");
+              } else {
+                print("Gagal");
+              }
+              showDialog(
+                  context: context,
+                  builder: (context) => CustomDialog(
+                      locname: address.toString(),
+                      imgurl: "$tostrimg.jpg",
+                      title: "Absence Success",
+                      date: "Date : $date",
+                      time: "Time : $time",
+                      ip: "IP Address : $wifiIP",
+                      lat: "Latitude : ${_locationData.latitude}",
+                      long: "Longtitude : ${_locationData.longitude}"));
+            } else if (strmaxlate < strttimein) {
+              return Fluttertoast.showToast(
+                  msg: "Sudah Melebihi Batas Maksimal!",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 5,
+                  backgroundColor: Color.fromARGB(255, 42, 46, 147),
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              print("INSERT ATTENDANCE");
+              // GET IMAGE
+              final ImagePicker _picker = ImagePicker();
+              final XFile imagePicked =
+                  await _picker.pickImage(source: ImageSource.camera);
+              imageAttendance = File(imagePicked.path);
+              imageAttendance2 = File(imagePicked.name);
+              setState(() {
+                imageAttendance = File(imagePicked.path);
+                imageAttendance2 = File(imagePicked.name);
+                strimg = imageAttendance2.toString();
+                substrimg = strimg.substring(7);
+                substrimg2 = substrimg.substring(0, 18);
+                tostrimg = substrimg2.toString();
+              });
+
+              // INSERT ATTENDANCE
+              var date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+              var periode = DateFormat('yyyyMM').format(DateTime.now());
+              var days = DateFormat('dd').format(DateTime.now());
+              var dt =
+                  DateFormat('yyyy-MM-dd').add_Hms().format(DateTime.now());
+              var time = DateFormat.Hms().format(DateTime.now());
+              var url = Uri.parse("$env/teams/insertattendance.php");
+              var request = http.MultipartRequest('POST', url);
+              request.fields['region_id'] = region_id;
+              request.fields['branch_id'] = branch_id;
+              request.fields['division_id'] = division_id;
+              request.fields['department_id'] = department_id;
+              request.fields['section_id'] = section_id;
+              request.fields['unit_id'] = unit_id;
+              request.fields['location_id'] = location_id;
+              request.fields['shift_id'] = shift_id;
+              request.fields['employee_shift_id'] = employee_shift_id;
+              request.fields['employee_id'] = employee_id.toString();
+              request.fields['employee_rfid_code'] = employee_rfid_code;
+              request.fields['periode'] = periode;
+              request.fields['days'] = days;
+              request.fields['employee_attendance_in_status'] = "1";
+              request.fields['employee_attendance_out_status'] = "0";
+              request.fields['employee_attendance_date'] = date;
+              request.fields['employee_attendance_log_date'] = dt;
+              request.fields['employee_attendance_log_in_date'] = dt;
+              request.fields['employee_attendance_log_out_date'] = dt;
+              request.fields['machine_ip_address'] = wifiIP;
+              request.fields['employee_attendance_location_in'] =
+                  "${_locationData.latitude} , ${_locationData.longitude}";
+              request.fields['employee_attendance_location_out'] =
+                  "${_locationData.latitude} , ${_locationData.longitude}";
+              request.fields['employee_attendance_location_address'] =
+                  address.toString();
+              var pic = await http.MultipartFile.fromPath(
+                  "image", imageAttendance.path);
+              request.files.add(pic);
+              var response = await request.send();
+              if (response.statusCode == 200) {
+                print("Sukses");
+              } else {
+                print("Gagal");
+              }
+              showDialog(
+                  context: context,
+                  builder: (context) => CustomDialog(
+                      locname: address.toString(),
+                      imgurl: "$tostrimg.jpg",
+                      title: "Absence Success",
+                      date: "Date : $date",
+                      time: "Time : $time",
+                      ip: "IP Address : $wifiIP",
+                      lat: "Latitude : ${_locationData.latitude}",
+                      long: "Longtitude : ${_locationData.longitude}"));
+            }
+          }
+        }
+      }
+    }
+  }

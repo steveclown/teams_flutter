@@ -1,0 +1,13 @@
+1. Cek days (attendance_log)
+2. Cek sudah absen atau belum (attendancecheck)
+3. Cek payroll_employee_level
+4. Cek Distance location
+5. Cek Max Late Attendance
+
+
+time in < 07.00  open
+time in > 07.00 close
+time in < 16.30 close
+time in > 16.30 open
+
+but absence only 2 per day (absence in, absence out)
