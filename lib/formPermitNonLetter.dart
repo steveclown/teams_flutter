@@ -37,7 +37,7 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
 
   String getDateStart() {
     if (datestart == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdatestart = DateFormat('yyyy-MM-dd').format(datestart);
@@ -48,7 +48,7 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
 
   String getDateEnd() {
     if (dateend == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdateend = DateFormat('yyyy-MM-dd').format(dateend);
@@ -97,7 +97,7 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
     var url = Uri.parse("$env/teams/insertpermit.php");
     var request = http.MultipartRequest('POST', url);
     request.fields['employee_id'] = employee_id.toString();
-    request.fields['permit_id'] = categorypermit;
+    request.fields['permit_id'] = '8';
     request.fields['employee_attendance_data_id'] = '1';
     request.fields['employee_permit_date'] = strdatestart;
     request.fields['employee_permit_start_date'] = strdatestart;
@@ -173,9 +173,11 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Form Permit Non Letter",
-          style:
-              TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
+          "Formulir Ijin Sakit Tanpa Surat",
+          style: TextStyle(
+              fontSize: 13,
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -208,40 +210,12 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.55,
                           child: Center(
-                            child: DropdownButton(
+                            child: Text("Sakit Tanpa Surat",
                                 style: TextStyle(
-                                  color: Color.fromARGB(255, 2, 34, 104),
-                                ),
-                                value: categorypermit,
-                                hint: Text(
-                                  "Select Category",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: 'Richard-Samuels',
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                items: datacategorypermit.map(
-                                  (list) {
-                                    return DropdownMenuItem(
-                                      child: Text(list['permit_name'],
-                                          style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontFamily: 'Richard-Samuels',
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                      FontWeight.bold) ??
-                                              'default'),
-                                      value: list['permit_id'],
-                                    );
-                                  },
-                                ).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    categorypermit = value;
-                                    print(categorypermit);
-                                  });
-                                }),
+                                    fontSize: 12,
+                                    fontFamily: 'Richard-Samuels',
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
                           ),
                         )
                       ],
@@ -372,7 +346,7 @@ class _formPermitNonLetterState extends State<formPermitNonLetter> {
                                 ),
                                 addHorizontalSpace(2),
                                 Text(
-                                  "Add Photo",
+                                  "Foto",
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontFamily: 'Richard-Samuels',

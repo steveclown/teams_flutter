@@ -18,14 +18,14 @@ class Detail extends StatefulWidget {
 class _DetailState extends State<Detail> {
   @override
   Widget build(BuildContext context) {
-    var day = DateFormat('EEEE').format(
+    var day = DateFormat('EEEE', 'id_ID').format(
         DateTime.parse(widget.list[widget.index]['employee_attendance_date']));
     var gettime = DateFormat('yyyy-MM-dd HH:mm:ss')
         .parse(widget.list[widget.index]['employee_attendance_log_in_date']);
     var showtime = DateFormat.Hms().format(gettime);
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Details Absence In"),
+        title: new Text("Detail Absen Masuk"),
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
       ),
       body: new Container(
@@ -66,25 +66,120 @@ class _DetailState extends State<Detail> {
                         ),
                       ),
                       Padding(padding: EdgeInsets.only(top: 10)),
-                      new Text(
-                        'Days : $day',
-                        style: new TextStyle(fontSize: 15.0),
+                      Row(
+                        children: [
+                          new Text(
+                            'Hari',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          addHorizontalSpace(35),
+                          new Text(
+                            ': ',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          new Text(
+                            '$day',
+                            style: new TextStyle(fontSize: 15.0),
+                          ),
+                        ],
                       ),
-                      new Text(
-                        "Date : ${widget.list[widget.index]['employee_attendance_date']}",
-                        style: new TextStyle(fontSize: 15.0),
+                      Row(
+                        children: [
+                          new Text(
+                            'Tanggal',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          addHorizontalSpace(9),
+                          new Text(
+                            ': ',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          new Text(
+                            '${widget.list[widget.index]['employee_attendance_date']}',
+                            style: new TextStyle(fontSize: 15.0),
+                          ),
+                        ],
                       ),
-                      new Text(
-                        "Time : $showtime",
-                        style: new TextStyle(fontSize: 15.0),
+                      Row(
+                        children: [
+                          new Text(
+                            'Waktu',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          addHorizontalSpace(21),
+                          new Text(
+                            ': ',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          new Text(
+                            '$showtime',
+                            style: new TextStyle(fontSize: 15.0),
+                          ),
+                        ],
                       ),
-                      new Text(
-                        "IP : ${widget.list[widget.index]['machine_ip_address']}",
-                        style: new TextStyle(fontSize: 15.0),
+                      Row(
+                        children: [
+                          new Text(
+                            'IP',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          addHorizontalSpace(49),
+                          new Text(
+                            ': ',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          new Text(
+                            '${widget.list[widget.index]['machine_ip_address']}',
+                            style: new TextStyle(fontSize: 15.0),
+                          ),
+                        ],
                       ),
-                      new Text(
-                        "Location : ${widget.list[widget.index]['employee_attendance_location_in']}",
-                        style: new TextStyle(fontSize: 15.0),
+                      Row(
+                        children: [
+                          new Text(
+                            'Lokasi',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          addHorizontalSpace(19),
+                          new Text(
+                            ': ',
+                            style: new TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          new Text(
+                            '${widget.list[widget.index]['employee_attendance_location_in']}',
+                            style: new TextStyle(fontSize: 15.0),
+                          ),
+                        ],
                       ),
                     ],
                   ),

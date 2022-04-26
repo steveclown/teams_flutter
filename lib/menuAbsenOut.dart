@@ -81,7 +81,7 @@ class _dataAbsenOutState extends State<dataAbsenOut> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "History Absence Out",
+          "Riwayat Absen Pulang",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -183,7 +183,7 @@ class ItemList extends StatelessWidget {
               ),
               child: new ListTile(
                 title: new Text(
-                    DateFormat('EEEE').format(
+                    DateFormat('EEEE', 'id_ID').format(
                         DateTime.parse(list[i]['employee_attendance_date'])),
                     style: TextStyle(
                       fontFamily: 'Montserrat',

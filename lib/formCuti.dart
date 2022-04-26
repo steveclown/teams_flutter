@@ -45,7 +45,7 @@ class _formCutiState extends State<formCuti> {
 
   String getDateStart() {
     if (datestart == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdatestart = DateFormat('yyyy-MM-dd').format(datestart);
@@ -56,7 +56,7 @@ class _formCutiState extends State<formCuti> {
 
   String getDateEnd() {
     if (dateend == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdateend = DateFormat('yyyy-MM-dd').format(dateend);
@@ -221,7 +221,7 @@ class _formCutiState extends State<formCuti> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Form Leave",
+          "Formulir Cuti",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -298,6 +298,7 @@ class _formCutiState extends State<formCuti> {
 
                             if (newDateStart == null) return;
                             setState(() => datestart = newDateStart);
+                            print(newDateStart);
                           }),
                     ),
                   ],
@@ -377,6 +378,7 @@ class _formCutiState extends State<formCuti> {
                                   print(tglawal);
                                   print(tglakhir);
                                   print(selisih);
+                                  print(newDateEnd);
                                 });
                               }
                             }
@@ -414,7 +416,7 @@ class _formCutiState extends State<formCuti> {
                             ),
                             value: category,
                             hint: Text(
-                              "Select Category",
+                              "Pilih Kategori",
                               style: TextStyle(
                                   fontFamily: 'Montserrat',
                                   color: Color.fromARGB(255, 41, 71, 135),

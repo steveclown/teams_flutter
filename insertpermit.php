@@ -19,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $permit_type = $_POST['permit_type'];
     $deduction_type = $_POST['deduction_type'];
     $employee_attendance_date_status = $_POST['employee_attendance_date_status'];
-    $employee_attendance_date_status = $_POST['periode'];
-    $employee_attendance_date_status = $_POST['days'];
 
     $imagePath = 'assets/images/permit/' . $image_name . '.' . $image_exstension;
     $tmp_name = $_FILES['image']['tmp_name'];
@@ -43,12 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     WHERE employee_id='$employee_id' and employee_schedule_shift_date BETWEEN '$employee_permit_start_date' AND '$employee_permit_end_date'";
 
     mysqli_query($con, $updatescheduleshift);
-
-    $updatelog = "UPDATE hro_employee_attendance_log
-    SET day_$days = '3'
-    WHERE employee_id='$employee_id' and employee_attendance_log_period = '$periode'";
-
-    mysqli_query($con, $updatelog);
 
     if (mysqli_query($con, $insert)) {
         $response['values'] = 1;

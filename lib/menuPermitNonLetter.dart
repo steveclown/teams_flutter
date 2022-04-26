@@ -84,7 +84,7 @@ class _dataIjinNonLetterState extends State<dataIjinNonLetter> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Permit Non Letter",
+          "Ijin Sakit Tanpa Surat",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -107,7 +107,7 @@ class _dataIjinNonLetterState extends State<dataIjinNonLetter> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "History",
+                    "Riwayat",
                     style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'Richard-Samuels',
@@ -141,7 +141,7 @@ class _dataIjinNonLetterState extends State<dataIjinNonLetter> {
                         FloatingActionButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => formPermit()));
+                                builder: (context) => formPermitNonLetter()));
                           },
                           child: const Icon(Icons.add),
                         ),

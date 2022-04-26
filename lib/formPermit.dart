@@ -36,7 +36,7 @@ class _formPermitState extends State<formPermit> {
 
   String getDateStart() {
     if (datestart == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdatestart = DateFormat('yyyy-MM-dd').format(datestart);
@@ -47,7 +47,7 @@ class _formPermitState extends State<formPermit> {
 
   String getDateEnd() {
     if (dateend == null) {
-      return 'Select Date';
+      return 'Pilih Tanggal';
     } else {
       setState(() {
         strdateend = DateFormat('yyyy-MM-dd').format(dateend);
@@ -96,7 +96,7 @@ class _formPermitState extends State<formPermit> {
     var url = Uri.parse("$env/teams/insertpermit.php");
     var request = http.MultipartRequest('POST', url);
     request.fields['employee_id'] = employee_id.toString();
-    request.fields['permit_id'] = categorypermit;
+    request.fields['permit_id'] = '0';
     request.fields['employee_attendance_data_id'] = '1';
     request.fields['employee_permit_date'] = strdatestart;
     request.fields['employee_permit_start_date'] = strdatestart;
@@ -172,7 +172,7 @@ class _formPermitState extends State<formPermit> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Form Permit",
+          "Formulir Ijin",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -193,58 +193,58 @@ class _formPermitState extends State<formPermit> {
                 padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Pilih Kategori :",
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Richard-Samuels',
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        addHorizontalSpace(5),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.55,
-                          child: Center(
-                            child: DropdownButton(
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 2, 34, 104),
-                                ),
-                                value: categorypermit,
-                                hint: Text(
-                                  "Select Category",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: 'Richard-Samuels',
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                items: datacategorypermit.map(
-                                  (list) {
-                                    return DropdownMenuItem(
-                                      child: Text(list['permit_name'],
-                                          style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontFamily: 'Richard-Samuels',
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                      FontWeight.bold) ??
-                                              'default'),
-                                      value: list['permit_id'],
-                                    );
-                                  },
-                                ).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    categorypermit = value;
-                                    print(categorypermit);
-                                  });
-                                }),
-                          ),
-                        )
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       "Pilih Kategori :",
+                    //       style: TextStyle(
+                    //           fontSize: 12,
+                    //           fontFamily: 'Richard-Samuels',
+                    //           color: Colors.black,
+                    //           fontWeight: FontWeight.bold),
+                    //     ),
+                    //     addHorizontalSpace(5),
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width * 0.55,
+                    //       child: Center(
+                    //         child: DropdownButton(
+                    //             style: TextStyle(
+                    //               color: Color.fromARGB(255, 2, 34, 104),
+                    //             ),
+                    //             value: categorypermit,
+                    //             hint: Text(
+                    //               "Select Category",
+                    //               style: TextStyle(
+                    //                   fontSize: 12,
+                    //                   fontFamily: 'Richard-Samuels',
+                    //                   color: Colors.black,
+                    //                   fontWeight: FontWeight.bold),
+                    //             ),
+                    //             items: datacategorypermit.map(
+                    //               (list) {
+                    //                 return DropdownMenuItem(
+                    //                   child: Text(list['permit_name'],
+                    //                       style: TextStyle(
+                    //                               fontSize: 12,
+                    //                               fontFamily: 'Richard-Samuels',
+                    //                               color: Colors.black,
+                    //                               fontWeight:
+                    //                                   FontWeight.bold) ??
+                    //                           'default'),
+                    //                   value: list['permit_id'],
+                    //                 );
+                    //               },
+                    //             ).toList(),
+                    //             onChanged: (value) {
+                    //               setState(() {
+                    //                 categorypermit = value;
+                    //                 print(categorypermit);
+                    //               });
+                    //             }),
+                    //       ),
+                    //     )
+                    //   ],
+                    // ),
                     Row(
                       children: [
                         Text(
@@ -371,7 +371,7 @@ class _formPermitState extends State<formPermit> {
                                 ),
                                 addHorizontalSpace(2),
                                 Text(
-                                  "Add Photo",
+                                  "Pilih Foto",
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontFamily: 'Richard-Samuels',

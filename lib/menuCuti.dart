@@ -159,7 +159,7 @@ class _dataCutiState extends State<dataCuti> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Leave",
+          "Cuti",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -239,7 +239,7 @@ class _dataCutiState extends State<dataCuti> {
                           Padding(
                             padding: EdgeInsets.zero,
                             child: Text(
-                              "History",
+                              "Riwayat",
                               style: TextStyle(
                                   fontSize: 15,
                                   fontFamily: 'Richard-Samuels',

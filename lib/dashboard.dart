@@ -196,6 +196,45 @@ class _menuDashboardState extends State<menuDashboard> {
     }
   }
 
+  Future getLocation() async {
+    Location location = new Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+    bool _isListenLocation = false, _isGetLocation = false;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (_serviceEnabled) return;
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) return;
+    }
+
+    _locationData = await location.getLocation();
+    setState(() {
+      _isGetLocation = true;
+    });
+
+    //GET ADDRESS
+    List<geocod.Placemark> placemark = await geocod.placemarkFromCoordinates(
+        _locationData.latitude, _locationData.longitude,
+        localeIdentifier: "en");
+    geocod.Placemark place = placemark[0];
+    address.value =
+        '${place.street}, ${place.locality}, ${place.subAdministrativeArea}, ${place.country}';
+    // '${place.subAdministrativeArea},${place.country}';
+    print("address");
+    print(address);
+    setState(() {
+      address();
+    });
+  }
+
   insertAttendance() async {
     EasyLoading.show(status: 'Harap Tunggu...');
     // GET GPS
@@ -228,7 +267,7 @@ class _menuDashboardState extends State<menuDashboard> {
         localeIdentifier: "en");
     geocod.Placemark place = placemark[0];
     address.value =
-        '${place.street},${place.locality},${place.subAdministrativeArea},${place.country}';
+        '${place.street}, ${place.locality}, ${place.subAdministrativeArea}, ${place.country}';
     // '${place.subAdministrativeArea},${place.country}';
     print("address");
     print(address);
@@ -341,20 +380,7 @@ class _menuDashboardState extends State<menuDashboard> {
         print(employee_attendance_date);
         print(valueattendancecheck);
         print(pesan);
-        if (countattendancecheck > 1) {
-          setState(() {
-            bottomIndex = 0;
-          });
-          EasyLoading.dismiss();
-          return Fluttertoast.showToast(
-              msg: "Proses Absensi Gagal",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 5,
-              backgroundColor: Color.fromARGB(255, 42, 46, 147),
-              textColor: Colors.white,
-              fontSize: 16.0);
-        } else {
+        if (countattendancecheck == 1) {
           if (payroll_employee_level > 0) {
             // GET IMAGE
             final ImagePicker _picker = ImagePicker();
@@ -513,6 +539,19 @@ class _menuDashboardState extends State<menuDashboard> {
               //         long: "Longtitude : ${_locationData.longitude}"));
             }
           }
+        } else {
+          setState(() {
+            bottomIndex = 0;
+          });
+          EasyLoading.dismiss();
+          return Fluttertoast.showToast(
+              msg: "Proses Absensi Gagal",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 5,
+              backgroundColor: Color.fromARGB(255, 42, 46, 147),
+              textColor: Colors.white,
+              fontSize: 16.0);
         }
       } else if (strmaxlate < strttimein) {
         EasyLoading.dismiss();
@@ -773,6 +812,7 @@ class _menuDashboardState extends State<menuDashboard> {
     Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     getPref();
     getAttendanceLog();
+    getLocation();
     configLoading();
     super.initState();
     Timer(Duration(seconds: 1), () {
@@ -953,6 +993,31 @@ class _menuDashboardState extends State<menuDashboard> {
                               ),
                             ],
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10, top: 5),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage("assets/icon/07/location.png"),
+                                  backgroundColor: Colors.transparent,
+                                  radius: 20,
+                                ),
+                                addHorizontalSpace(15),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  child: Text(address.toString(),
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.white),
+                                      textAlign: TextAlign.left),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -974,235 +1039,236 @@ class _menuDashboardState extends State<menuDashboard> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 0, 30),
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-41.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Lembur",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                        child: Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-41.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Lembur",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                        Text(
-                                          "",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                      Text(
+                                        "",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                      ]),
-                                    ),
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        dataCuti()),
-                                                (Route<dynamic> route) => false,
-                                              );
-                                            },
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-42.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Cuti",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                    ]),
+                                  ),
+                                  addHorizontalSpace(0.05),
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      dataCuti()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          },
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-42.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Cuti",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                        Text(
-                                          "",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                      Text(
+                                        "",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                      ]),
-                                    ),
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-43.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Perjalanan",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                    ]),
+                                  ),
+                                  addHorizontalSpace(0.05),
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-43.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Perjalanan",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                        Text(
-                                          "Bisnis",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                      Text(
+                                        "Bisnis",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                      ]),
-                                    ),
-                                  ],
-                                ),
+                                      ),
+                                    ]),
+                                  ),
+                                ],
+                              ),
 
 // Baris ke - 2
-                                Padding(padding: EdgeInsets.only(top: 25)),
+                              Padding(padding: EdgeInsets.only(top: 25)),
 
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        dataIjin()),
-                                                (Route<dynamic> route) => false,
-                                              );
-                                            },
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-46.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Ijin",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Montserrat',
-                                              color: Colors.black),
-                                        ),
-                                        Text(
-                                          "",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Montserrat',
-                                              color: Colors.black),
-                                        ),
-                                      ]),
-                                    ),
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        dataIjinWithLetter()),
-                                                (Route<dynamic> route) => false,
-                                              );
-                                            },
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-47.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Ijin",
-                                          style: TextStyle(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      dataIjin()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          },
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-46.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Ijin",
+                                        style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        Text(
-                                          "Dengan Surat",
-                                          style: TextStyle(
+                                            color: Colors.black),
+                                      ),
+                                      Text(
+                                        "",
+                                        style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                            color: Colors.black),
+                                      ),
+                                    ]),
+                                  ),
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      dataIjinWithLetter()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          },
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-47.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Ijin Sakit",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                      ]),
-                                    ),
-                                    Center(
-                                      child: Column(children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        dataIjinNonLetter()),
-                                                (Route<dynamic> route) => false,
-                                              );
-                                            },
-                                            icon: Image.asset(
-                                                'assets/icon/08/icon-48.png'),
-                                            iconSize: 60,
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints()),
-                                        Text(
-                                          "Ijin",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                      Text(
+                                        "Dengan Surat",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                        Text(
-                                          "Tanpa Surat",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Montserrat',
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                    ]),
+                                  ),
+                                  Center(
+                                    child: Column(children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      dataIjinNonLetter()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          },
+                                          icon: Image.asset(
+                                              'assets/icon/08/icon-48.png'),
+                                          iconSize: 60,
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints()),
+                                      Text(
+                                        "Ijin Sakit",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
                                         ),
-                                      ]),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                      ),
+                                      Text(
+                                        "Tanpa Surat",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),

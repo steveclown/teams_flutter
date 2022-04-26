@@ -83,7 +83,7 @@ class _dataIjinState extends State<dataIjin> {
       appBar: new AppBar(
         backgroundColor: Color.fromARGB(255, 41, 71, 135),
         title: Text(
-          "Permit",
+          "Ijin",
           style:
               TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -106,7 +106,7 @@ class _dataIjinState extends State<dataIjin> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "History",
+                    "Riwayat",
                     style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'Richard-Samuels',
